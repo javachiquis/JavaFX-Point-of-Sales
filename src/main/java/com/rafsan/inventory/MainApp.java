@@ -44,9 +44,9 @@ public class MainApp extends Application {
         } else {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("An error has occured!");
-                alert.setHeaderText("Database Connection Error!");
-                alert.setContentText("Please contact the developer");
+                alert.setTitle("A ocurrido un error!");
+                alert.setHeaderText("Error conexion Base de Datos!");
+                alert.setContentText("Por favor contacte al Desarrollador");
                 alert.showAndWait();
                 Platform.exit();
             });

@@ -55,6 +55,7 @@ public class EditController implements Initializable, SupplierInterface {
     @FXML
     public void handleCancel(ActionEvent event) {
         resetValues();
+        ((Node) (event.getSource())).getScene().getWindow().hide();
     }
 
     @FXML

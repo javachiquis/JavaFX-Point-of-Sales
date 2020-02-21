@@ -92,6 +92,7 @@ public class EditController implements Initializable, EmployeeInterface {
     @FXML
     public void handleCancel(ActionEvent event) {
         resetValues();
+        ((Node) (event.getSource())).getScene().getWindow().hide();
     }
 
     private boolean validateInput() {

@@ -1,11 +1,15 @@
 package com.rafsan.inventory.controller.pos;
 
+import com.rafsan.inventory.entity.Employee;
 import com.rafsan.inventory.entity.Item;
 import com.rafsan.inventory.entity.Payment;
 import com.rafsan.inventory.entity.Product;
+import com.rafsan.inventory.interfaces.TableColumnInterface;
 import com.rafsan.inventory.model.ProductModel;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import com.rafsan.inventory.utils.DisplayUtils;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,6 +30,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Node;
@@ -34,7 +39,11 @@ import static com.rafsan.inventory.interfaces.ProductInterface.PRODUCTLIST;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.StageStyle;
 
-public class PosController implements Initializable, ProductInterface {
+public class PosController implements Initializable, ProductInterface, TableColumnInterface<Item> {
+
+    public static final boolean ENABLE_IVA = false;
+
+    public static final double IVA = 0.19;
 
     @FXML
     private TableView<Product> productTableView;
@@ -57,11 +66,22 @@ public class PosController implements Initializable, ProductInterface {
     @FXML
     private Label quantityLabel;
     @FXML
+    private Label vatLabel;
+    @FXML
     private ObservableList<Item> ITEMLIST;
+    @FXML
+    private ImageView loadedImage;
+
     private ProductModel productModel;
 
     private double xOffset = 0;
     private double yOffset = 0;
+
+    private Employee employee;
+
+    public PosController(Employee employee) {
+        this.employee = employee;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -79,8 +99,11 @@ public class PosController implements Initializable, ProductInterface {
 
         itemColumn.setCellValueFactory(new PropertyValueFactory<>("itemName"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("unitPrice"));
+        priceColumn.setCellFactory(getFormattedValue());
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        quantityColumn.setCellFactory(getFormattedValue());
         totalColumn.setCellValueFactory(new PropertyValueFactory<>("total"));
+        totalColumn.setCellFactory(getFormattedValue());
         listTableView.setItems(ITEMLIST);
 
         addButton
@@ -128,7 +151,12 @@ public class PosController implements Initializable, ProductInterface {
         if (product != null) {
             quantityField.setDisable(false);
             productField.setText(product.getProductName());
-            priceField.setText(String.valueOf(product.getPrice()));
+            priceField.setText(decimalFormat.format(product.getPrice()));
+            if (product.getImageURL() != null && !product.getImageURL().isEmpty()){
+                loadedImage.setImage(new Image(product.getImageURL()));
+            } else {
+                loadedImage.setImage(new Image("images/default_product_image.jpg"));
+            }
 
             double quantity = product.getQuantity();
 
@@ -139,7 +167,7 @@ public class PosController implements Initializable, ProductInterface {
                 quantityField.setEditable(false);
                 quantityField.setStyle("-fx-background-color: red;");
             }
-            quantityLabel.setText("Stock: " + String.valueOf(quantity));
+            quantityLabel.setText("Stock: " + decimalFormat.format(quantity));
             descriptionArea.setText(product.getDescription());
         } else {
             productField.setText("");
@@ -162,14 +190,14 @@ public class PosController implements Initializable, ProductInterface {
         priceField.setText("");
         quantityField.setText("");
         resetQuantityField();
-        quantityLabel.setText("Available: ");
+        quantityLabel.setText("Disponible: ");
         descriptionArea.setText("");
     }
 
     private void resetInvoice() {
-        subTotalField.setText("0.00");
-        vatField.setText("0.00");
-        netPayableField.setText("0.00");
+        subTotalField.setText("0");
+        vatField.setText("");
+        netPayableField.setText("0");
     }
 
     private void resetQuantityField() {
@@ -219,12 +247,20 @@ public class PosController implements Initializable, ProductInterface {
 
         if (subTotalPrice > 0) {
             paymentButton.setDisable(false);
-            double vat = (double) subTotalPrice * 0.025;
-            double netPayablePrice = (double) (Math.abs((subTotalPrice + vat) - 5));
 
-            subTotalField.setText(String.valueOf(subTotalPrice));
-            vatField.setText(String.valueOf(vat));
-            netPayableField.setText(String.valueOf(netPayablePrice));
+            double vat  = 0;
+
+            if(ENABLE_IVA){
+                vat = subTotalPrice * IVA;
+                vatField.setText(DisplayUtils.getFormattedValue(vat));
+                vatField.setDisable(false);
+                vatLabel.setVisible(true);
+            }
+
+            double netPayablePrice = (Math.abs((subTotalPrice + vat)));
+
+            subTotalField.setText(DisplayUtils.getFormattedValue(subTotalPrice));
+            netPayableField.setText(DisplayUtils.getFormattedValue(netPayablePrice));
         }
     }
 
@@ -233,15 +269,15 @@ public class PosController implements Initializable, ProductInterface {
 
         Payment payment = new Payment(
                 Double.parseDouble(subTotalField.getText().trim()),
-                Double.parseDouble(vatField.getText().trim()),
-                Double.parseDouble(discountField.getText().trim()),
+                Double.parseDouble(vatField.getText().isEmpty() ? "0.0" : vatField.getText().trim()),
+                Double.parseDouble(discountField.getText().isEmpty() ? "0.0" : discountField.getText().trim()),
                 Double.parseDouble(netPayableField.getText().trim())
         );
 
         ObservableList<Item> sold = listTableView.getItems();
 
         FXMLLoader loader = new FXMLLoader((getClass().getResource("/fxml/Invoice.fxml")));
-        InvoiceController controller = new InvoiceController();
+        InvoiceController controller = new InvoiceController(employee);
         loader.setController(controller);
         controller.setData(Double.parseDouble(netPayableField.getText().trim()), sold, payment);
         Parent root = loader.load();
@@ -256,7 +292,7 @@ public class PosController implements Initializable, ProductInterface {
         });
         Scene scene = new Scene(root);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Payment");
+        stage.setTitle("Pago");
         stage.initStyle(StageStyle.UNDECORATED);
         stage.getIcons().add(new Image("/images/logo.png"));
         stage.setScene(scene);
@@ -284,14 +320,23 @@ public class PosController implements Initializable, ProductInterface {
         String errorMessage = "";
 
         if (quantityField.getText() == null || quantityField.getText().length() == 0) {
-            errorMessage += "Quantity not supplied!\n";
+            errorMessage += "Cantidad no suministrada!\n";
         } else {
             double quantity = Double.parseDouble(quantityField.getText());
             String available = quantityLabel.getText();
             double availableQuantity = Double.parseDouble(available.substring(7));
 
-            if (quantity > availableQuantity) {
-                errorMessage += "Out of Stock!\n";
+            String productName = productField.getText();
+
+            int selectedQuantity = ITEMLIST
+                    .stream()
+                    .filter(item -> item.getItemName().equalsIgnoreCase(productName))
+                    .mapToInt(item -> (int) item.getQuantity()).sum();
+
+            long totalQuantity = selectedQuantity + new Double(quantity).longValue();
+
+            if (totalQuantity > availableQuantity) {
+                errorMessage += "Agotado!\n";
             }
         }
 
@@ -299,8 +344,8 @@ public class PosController implements Initializable, ProductInterface {
             return true;
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setHeaderText("Please input the valid number of products");
+            alert.setTitle("Alerta");
+            alert.setHeaderText("Por favor ingrese un número valido de productos");
             alert.setContentText(errorMessage);
             alert.showAndWait();
             quantityField.setText("");

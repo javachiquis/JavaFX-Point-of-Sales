@@ -38,8 +38,8 @@ public class AddController implements Initializable, PurchaseInterface {
         productModel = new ProductModel();
         supplierModel = new SupplierModel();
         purchaseModel = new PurchaseModel();
-        ObservableList<String> productList = FXCollections.observableArrayList(productModel.getProductNames());
-        ObservableList<String> supplierList = FXCollections.observableArrayList(supplierModel.getNames());
+        ObservableList<Product> productList = FXCollections.observableArrayList(productModel.getProducts());
+        ObservableList<Supplier> supplierList = FXCollections.observableArrayList(supplierModel.getSuppliers());
         productBox.setItems(productList);
         supplierBox.setItems(supplierList);
     }
@@ -49,9 +49,9 @@ public class AddController implements Initializable, PurchaseInterface {
 
         if (validateInput()) {
 
-            Product product = productModel.getProduct(productBox.getSelectionModel().getSelectedIndex() + 1);
-            Supplier supplier = supplierModel.getSupplier(supplierBox.getSelectionModel().getSelectedIndex() + 1);
-            double quantity = Double.parseDouble(quantityField.getText());
+            Product product = (Product) productBox.getSelectionModel().getSelectedItem();
+            Supplier supplier = (Supplier) supplierBox.getSelectionModel().getSelectedItem();
+            Integer quantity = Integer.parseInt(quantityField.getText());
             double price = Double.parseDouble(priceField.getText());
             double total = quantity * price;
             Purchase purchase = new Purchase(
@@ -86,6 +86,7 @@ public class AddController implements Initializable, PurchaseInterface {
         quantityField.setText("");
         productBox.valueProperty().setValue(null);
         supplierBox.valueProperty().setValue(null);
+        ((Node) (event.getSource())).getScene().getWindow().hide();
     }
 
     private boolean validateInput() {

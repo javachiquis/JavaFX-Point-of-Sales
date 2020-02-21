@@ -35,6 +35,7 @@ public class AddController implements Initializable, CategoryInterface {
     public void handleCancel(ActionEvent event) {
         typeField.setText("");
         descriptionArea.setText("");
+        ((Node) (event.getSource())).getScene().getWindow().hide();
     }
     
     @FXML

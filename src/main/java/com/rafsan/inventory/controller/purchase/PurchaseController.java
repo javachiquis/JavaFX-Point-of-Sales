@@ -2,6 +2,7 @@ package com.rafsan.inventory.controller.purchase;
 
 import com.rafsan.inventory.interfaces.PurchaseInterface;
 import com.rafsan.inventory.entity.Purchase;
+import com.rafsan.inventory.interfaces.TableColumnInterface;
 import com.rafsan.inventory.model.PurchaseModel;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -30,7 +31,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-public class PurchaseController implements Initializable, PurchaseInterface {
+public class PurchaseController implements Initializable, PurchaseInterface, TableColumnInterface<Purchase> {
     
     @FXML
     private TableView<Purchase> purchaseTable;
@@ -63,8 +64,11 @@ public class PurchaseController implements Initializable, PurchaseInterface {
         supplierColumn.setCellValueFactory((TableColumn.CellDataFeatures<Purchase, String> p)
                 -> new SimpleStringProperty(p.getValue().getSupplier().getName()));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        quantityColumn.setCellFactory(getFormattedValue());
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        priceColumn.setCellFactory(getFormattedValue());
         totalColumn.setCellValueFactory(new PropertyValueFactory<>("total"));
+        totalColumn.setCellFactory(getFormattedValue());
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         purchaseTable.setItems(PURCHASELIST);
         

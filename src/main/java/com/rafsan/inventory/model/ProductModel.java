@@ -71,6 +71,7 @@ public class ProductModel implements ProductDao {
         p.setQuantity(product.getQuantity());
         p.setPrice(product.getPrice());
         p.setDescription(product.getDescription());
+        p.setImageURL(product.getImageURL());
         session.getTransaction().commit();
     }
     

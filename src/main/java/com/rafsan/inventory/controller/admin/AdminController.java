@@ -1,5 +1,6 @@
 package com.rafsan.inventory.controller.admin;
 
+import com.rafsan.inventory.entity.Employee;
 import com.rafsan.inventory.entity.Invoice;
 import com.rafsan.inventory.entity.Product;
 import com.rafsan.inventory.model.InvoiceModel;
@@ -49,7 +50,7 @@ public class AdminController implements Initializable {
     private BarChart<String, Double> productsChart;
     @FXML
     CategoryAxis pxAxis;
-    
+
     @FXML
     private PieChart stockChart;
 
@@ -89,33 +90,43 @@ public class AdminController implements Initializable {
 
     private void loadInvoiceChart() {
 
-        String[] months = DateFormatSymbols.getInstance(Locale.ENGLISH).getMonths();
-        ObservableList lists = FXCollections.observableArrayList(months);
-        XYChart.Series series = new XYChart.Series();
+        try{
+            String[] months = DateFormatSymbols.getInstance(Locale.getDefault()).getMonths();
+            ObservableList lists = FXCollections.observableArrayList(months);
+            XYChart.Series series = new XYChart.Series();
 
-        for (Invoice i : invoiceModel.getInvoices()) {
-            String month = convertDate(i.getDate());
-            series.getData().add(new XYChart.Data(month, i.getPayable()));
+            for (Invoice i : invoiceModel.getInvoices()) {
+                String month = convertDate(i.getDate());
+                series.getData().add(new XYChart.Data(month, i.getPayable()));
+            }
+
+            series.setName("Sales");
+            ixAxis.setCategories(lists);
+            invoiceChart.getData().add(series);
+        } catch(Exception ex){
+            ex.printStackTrace();
         }
-
-        series.setName("Sales");
-        ixAxis.setCategories(lists);
-        invoiceChart.getData().add(series);
+        
     }
 
     private void loadProductsChart() {
 
-        ObservableList lists = FXCollections.observableArrayList();
-        XYChart.Series<String, Double> series = new XYChart.Series<>();
+        try{
+            ObservableList lists = FXCollections.observableArrayList();
+            XYChart.Series<String, Double> series = new XYChart.Series<>();
 
-        for (Product p : productModel.getProducts()) {
-            series.getData().add(new XYChart.Data(p.getProductName(), p.getQuantity()));
-            lists.add(p.getProductName());
+            for (Product p : productModel.getProducts()) {
+                series.getData().add(new XYChart.Data(p.getProductName(), p.getQuantity()));
+                lists.add(p.getProductName());
+            }
+
+            series.setName("Products");
+            pxAxis.setCategories(lists);
+            productsChart.getData().add(series);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
-
-        series.setName("Products");
-        pxAxis.setCategories(lists);
-        productsChart.getData().add(series);
+        
     }
 
     private String convertDate(String date) {

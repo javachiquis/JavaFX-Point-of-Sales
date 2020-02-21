@@ -2,10 +2,9 @@ package com.rafsan.inventory.controller.report;
 
 import com.rafsan.inventory.entity.Invoice;
 import com.rafsan.inventory.interfaces.ReportInterface;
+import com.rafsan.inventory.interfaces.TableColumnInterface;
 import com.rafsan.inventory.model.InvoiceModel;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
+import com.rafsan.inventory.utils.DisplayUtils;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,7 +30,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-public class ReportController implements Initializable, ReportInterface {
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class ReportController implements Initializable, ReportInterface, TableColumnInterface<Invoice> {
 
     @FXML
     private TableView<Invoice> reportTable;
@@ -40,7 +43,7 @@ public class ReportController implements Initializable, ReportInterface {
     @FXML
     private TableColumn<Invoice, String> employeeColumn, dateColumn;
     @FXML
-    private TableColumn<Invoice, Double> totalColumn, vatColumn, discountColumn, 
+    private TableColumn<Invoice, Double> totalColumn, vatColumn, discountColumn,
             payableColumn, paidColumn, returnedColumn;
     @FXML
     private TextField searchField;
@@ -50,7 +53,7 @@ public class ReportController implements Initializable, ReportInterface {
 
     private double xOffset = 0;
     private double yOffset = 0;
-    
+
     @FXML
     private Button menu;
     @FXML
@@ -67,11 +70,17 @@ public class ReportController implements Initializable, ReportInterface {
         employeeColumn.setCellValueFactory((TableColumn.CellDataFeatures<Invoice, String> p)
                 -> new SimpleStringProperty(p.getValue().getEmployee().getUserName()));
         totalColumn.setCellValueFactory(new PropertyValueFactory<>("total"));
+        totalColumn.setCellFactory(getFormattedValue());
         vatColumn.setCellValueFactory(new PropertyValueFactory<>("vat"));
+        vatColumn.setCellFactory(getFormattedValue());
         discountColumn.setCellValueFactory(new PropertyValueFactory<>("discount"));
+        discountColumn.setCellFactory(getFormattedValue());
         payableColumn.setCellValueFactory(new PropertyValueFactory<>("payable"));
+        payableColumn.setCellFactory(getFormattedValue());
         paidColumn.setCellValueFactory(new PropertyValueFactory<>("paid"));
+        paidColumn.setCellFactory(getFormattedValue());
         returnedColumn.setCellValueFactory(new PropertyValueFactory<>("returned"));
+        returnedColumn.setCellFactory(getFormattedValue());
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         reportTable.setItems(REPORTLIST);
 
@@ -136,7 +145,7 @@ public class ReportController implements Initializable, ReportInterface {
     @FXML
     public void productAction(ActionEvent event) throws Exception {
 
-        windows("/fxml/Admin.fxml", "Admin", event);
+        windows("/fxml/Product.fxml", "Product", event);
     }
     
     @FXML

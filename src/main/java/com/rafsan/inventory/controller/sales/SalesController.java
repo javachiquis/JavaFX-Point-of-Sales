@@ -2,9 +2,12 @@ package com.rafsan.inventory.controller.sales;
 
 import com.rafsan.inventory.entity.Sale;
 import com.rafsan.inventory.interfaces.SaleInterface;
+import com.rafsan.inventory.interfaces.TableColumnInterface;
 import com.rafsan.inventory.model.SalesModel;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import com.rafsan.inventory.utils.DisplayUtils;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -29,7 +32,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-public class SalesController implements Initializable, SaleInterface {
+public class SalesController implements Initializable, SaleInterface, TableColumnInterface<Sale> {
 
     @FXML
     private TableView<Sale> salesTable;
@@ -66,8 +69,11 @@ public class SalesController implements Initializable, SaleInterface {
                 new SimpleStringProperty(p.getValue().getProduct().getProductName()));
         
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        quantityColumn.setCellFactory(getFormattedValue());
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        priceColumn.setCellFactory(getFormattedValue());
         totalColumn.setCellValueFactory(new PropertyValueFactory<>("total"));
+        totalColumn.setCellFactory(getFormattedValue());
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         salesTable.setItems(SALELIST);
         

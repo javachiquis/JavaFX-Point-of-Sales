@@ -32,7 +32,7 @@
 
 .tagline{
     -fx-font-family: Century Gothic;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #000000;
     -fx-font-size: 18px;
 }
 
@@ -44,14 +44,14 @@
 
 .error-message {
     -fx-font-family: Century Gothic;
-    -fx-text-fill: #ff3333;
-    -fx-font-size: 18;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 22;
 }
 
 .text-field {
     -fx-font-family: Consolas;
     -fx-text-fill: #ffffff;
-    -fx-font-size: 18;
+    -fx-font-size: 20;
     -fx-background-color: rgba(0, 88, 122, 1);
 }
 

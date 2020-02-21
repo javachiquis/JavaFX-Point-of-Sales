@@ -27,7 +27,9 @@ public class Product implements Serializable {
     private double quantity;
     @Column(name = "description")
     private String description;
-    
+    @Column(name = "image_url")
+    private String imageURL;
+
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "categoryId")
     private Category category;
@@ -39,8 +41,8 @@ public class Product implements Serializable {
     public Product() {
     }
 
-    public Product(long id, String productName, double price, 
-            double quantity, String description, Category category, Supplier supplier) {
+    public Product(long id, String productName, double price,
+            double quantity, String description, Category category, Supplier supplier, String imageURL) {
         this.id = id;
         this.productName = productName;
         this.price = price;
@@ -48,16 +50,18 @@ public class Product implements Serializable {
         this.description = description;
         this.category = category;
         this.supplier = supplier;
+        this.imageURL = imageURL;
     }
 
     public Product(String productName, double price, 
-            double quantity, String description, Category category, Supplier supplier) {
+            double quantity, String description, Category category, Supplier supplier, String imageURL) {
         this.productName = productName;
         this.price = price;
         this.quantity = quantity;
         this.description = description;
         this.category = category;
         this.supplier = supplier;
+        this.imageURL = imageURL;
     }
 
     public long getId() {
@@ -118,12 +122,14 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return "Product{" + "id=" + id + 
-                ", productName=" + productName + 
-                ", price=" + price + 
-                ", quantity=" + quantity + 
-                ", description=" + description + 
-                ", category=" + category + 
-                ", supplier=" + supplier + '}';
+        return productName;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 }

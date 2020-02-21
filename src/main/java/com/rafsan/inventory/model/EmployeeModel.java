@@ -37,6 +37,19 @@ public class EmployeeModel implements EmployeeDao {
 
         return employee;
     }
+
+    @Override
+    public Employee getEmployee(String username){
+
+        session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        Query query = session.createQuery("from Employee where userName = :username");
+        query.setParameter("username", username);
+        Employee employee = (Employee) query.uniqueResult();
+        session.getTransaction().commit();
+
+        return employee;
+    }
     
     @Override
     public String getEmployeeType(String username){

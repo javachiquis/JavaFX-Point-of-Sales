@@ -38,7 +38,7 @@ public class Purchase implements Serializable {
     }
 
     public Purchase(long id, Product product, Supplier supplier, 
-            double quantity, double price, double total, String date) {
+            Integer quantity, double price, double total, String date) {
         this.id = id;
         this.product = product;
         this.supplier = supplier;
@@ -49,7 +49,7 @@ public class Purchase implements Serializable {
     }
 
     public Purchase(Product product, Supplier supplier,
-            double quantity, double price, double total) {
+            Integer quantity, double price, double total) {
         this.product = product;
         this.supplier = supplier;
         this.quantity = quantity;

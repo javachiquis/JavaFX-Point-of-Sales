@@ -35,6 +35,7 @@ public class AddController implements Initializable, SupplierInterface {
         supplierField.setText("");
         phoneField.setText("");
         addressArea.setText("");
+        ((Node) (event.getSource())).getScene().getWindow().hide();
     }
 
     @FXML

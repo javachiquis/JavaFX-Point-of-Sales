@@ -1,15 +1,15 @@
 
 .header{
-    -fx-background-color: #cc66ff;
+    -fx-background-color: #759DA2;
 }
 
 .header-label{
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #eeeeee;
     -fx-font-size: 40px;
 }
 
 .product-vbox{
-    -fx-background-color: #ccccff;
+    -fx-background-color: #EBF8FA;
 }
 
 .search-field {
@@ -22,11 +22,13 @@
 }
 
 .menu-vbox{
-    -fx-background-color: #ccccff;
+//its correct
+    -fx-background-color: #DCEDF3;
 }
 
 .selection-hbox{
-    -fx-background-color: #ff99ff;
+//ITS CORRECT
+    -fx-background-color: #000000;
 }
 
 .table {
@@ -34,7 +36,8 @@
 }
 
 .left-product-vbox{
-    -fx-background-color: #ffcc33;
+//ITS CORRECT
+    -fx-background-color: #AFCEE3;
 }
 
 .left-grid {
@@ -46,7 +49,7 @@
 }
 
 .right-product-vbox{
-    -fx-background-color: #ff3333;
+    -fx-background-color: #858ea1;
 }
 
 .right-grid {
@@ -62,7 +65,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-size: 80%;
     -fx-background-position: center;
-    -fx-background-color: #cc66ff;
+    -fx-background-color: #3e3a40;
 }
 
 .logout-button:hover {

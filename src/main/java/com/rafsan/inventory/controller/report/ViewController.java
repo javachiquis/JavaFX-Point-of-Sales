@@ -3,6 +3,8 @@ package com.rafsan.inventory.controller.report;
 import com.rafsan.inventory.entity.Invoice;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import com.rafsan.inventory.utils.DisplayUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -32,12 +34,12 @@ public class ViewController implements Initializable {
         serialLabel.setText("Transcation ID# " + invoice.getId());
         dateLabel.setText("Date: " + invoice.getDate());
         employeeField.setText(invoice.getEmployee().getUserName());
-        totalField.setText(String.valueOf(invoice.getTotal()));
-        vatField.setText(String.valueOf(invoice.getVat()));
-        discountField.setText(String.valueOf(invoice.getDiscount()));
-        payableField.setText(String.valueOf(invoice.getPayable()));
-        paidField.setText(String.valueOf(invoice.getPaid()));
-        returnedField.setText(String.valueOf(invoice.getReturned()));
+        totalField.setText(DisplayUtils.getFormattedValue(invoice.getTotal()));
+        vatField.setText(DisplayUtils.getFormattedValue(invoice.getVat()));
+        discountField.setText(DisplayUtils.getFormattedValue(invoice.getDiscount()));
+        payableField.setText(DisplayUtils.getFormattedValue(invoice.getPayable()));
+        paidField.setText(DisplayUtils.getFormattedValue(invoice.getPaid()));
+        returnedField.setText(DisplayUtils.getFormattedValue(invoice.getReturned()));
     }
     
     @FXML

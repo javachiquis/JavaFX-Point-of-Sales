@@ -42,6 +42,7 @@ public class AddController implements Initializable, EmployeeInterface {
         passwordField.setText("");
         phoneField.setText("");
         addressArea.setText("");
+        ((Node) (event.getSource())).getScene().getWindow().hide();
     }
 
     @FXML

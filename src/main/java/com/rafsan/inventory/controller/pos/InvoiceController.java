@@ -1,10 +1,6 @@
 package com.rafsan.inventory.controller.pos;
 
-import com.rafsan.inventory.entity.Invoice;
-import com.rafsan.inventory.entity.Item;
-import com.rafsan.inventory.entity.Payment;
-import com.rafsan.inventory.entity.Product;
-import com.rafsan.inventory.entity.Sale;
+import com.rafsan.inventory.entity.*;
 import com.rafsan.inventory.model.EmployeeModel;
 import com.rafsan.inventory.model.InvoiceModel;
 import com.rafsan.inventory.model.ProductModel;
@@ -12,6 +8,8 @@ import com.rafsan.inventory.model.SalesModel;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ResourceBundle;
+
+import com.rafsan.inventory.utils.DisplayUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -38,9 +36,14 @@ public class InvoiceController implements Initializable {
     private SalesModel salesModel;
     private InvoiceModel invoiceModel;
     private Payment payment;
+    private Employee employee;
 
     private double xOffset = 0;
     private double yOffset = 0;
+
+    public InvoiceController(Employee employee) {
+        this.employee = employee;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -48,7 +51,7 @@ public class InvoiceController implements Initializable {
         employeeModel = new EmployeeModel();
         salesModel = new SalesModel();
         invoiceModel = new InvoiceModel();
-        totalAmountField.setText(String.valueOf(netPrice));
+        totalAmountField.setText(DisplayUtils.getFormattedValue(netPrice));
     }
 
     public void setData(double netPrice, ObservableList<Item> items, Payment payment) {
@@ -69,7 +72,7 @@ public class InvoiceController implements Initializable {
 
             Invoice invoice = new Invoice(
                     invoiceId,
-                    employeeModel.getEmployee(2),
+                    employeeModel.getEmployee(employee.getUserName()),
                     payment.getSubTotal(),
                     payment.getVat(),
                     payment.getDiscount(),
@@ -126,17 +129,17 @@ public class InvoiceController implements Initializable {
         String errorMessage = "";
 
         if (paidAmountField.getText() == null || paidAmountField.getText().length() == 0) {
-            errorMessage += "Invalid Input!\n";
+            errorMessage += "Valor invalido!\n";
         } else if (Double.parseDouble(paidAmountField.getText()) < netPrice) {
-            errorMessage += "Insufficient Input!\n";
+            errorMessage += "Valor insuficiente!\n";
         }
 
         if (errorMessage.length() == 0) {
             return true;
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning");
-            alert.setHeaderText("Please input the valid amount");
+            alert.setTitle("Alerta");
+            alert.setHeaderText("Por favor ingrese un valor igual o superior");
             alert.setContentText(errorMessage);
             alert.showAndWait();
             paidAmountField.setText("");

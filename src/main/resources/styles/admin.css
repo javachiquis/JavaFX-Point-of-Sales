@@ -17,7 +17,7 @@
 
 .logo-background {
 
-    -fx-background-color: rgba(28, 185, 176, 1);
+    -fx-background-color: #143346;
     -fx-border-style: solid;
     -fx-border-width: 0 0 1px 0;
     -fx-border-color: rgba(28, 185, 176, 1);
@@ -31,7 +31,7 @@
 
 .control-background {
 
-    -fx-background-color: rgba(23, 169, 168, 1);
+    -fx-background-color: #143346;
     -fx-border-style: solid;
     -fx-border-width: 0 0 1px 0;
     -fx-border-color: rgba(23, 169, 168, 1);
@@ -49,6 +49,7 @@
 
 .logout-button {
     -fx-background-image: url("../images/logout.png");
+    -fx-background-color: #3e3a40;
 }
 
 .hamburger-button, .logout-button, .open-menu  {

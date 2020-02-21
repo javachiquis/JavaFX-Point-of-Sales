@@ -2,6 +2,7 @@ package com.rafsan.inventory.controller.product;
 
 import com.rafsan.inventory.entity.Product;
 import com.rafsan.inventory.entity.Sale;
+import com.rafsan.inventory.interfaces.TableColumnInterface;
 import com.rafsan.inventory.model.ProductModel;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -44,7 +45,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-public class ProductController implements Initializable, ProductInterface {
+public class ProductController implements Initializable, ProductInterface, TableColumnInterface<Product> {
 
     @FXML
     private TableView<Product> productTable;
@@ -89,7 +90,9 @@ public class ProductController implements Initializable, ProductInterface {
         supplierColumn.setCellValueFactory((TableColumn.CellDataFeatures<Product, String> p)
                 -> new SimpleStringProperty(p.getValue().getSupplier().getName()));
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        priceColumn.setCellFactory(getFormattedValue());
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        quantityColumn.setCellFactory(getFormattedValue());
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         productTable.setItems(PRODUCTLIST);
 
@@ -162,7 +165,7 @@ public class ProductController implements Initializable, ProductInterface {
 
         if (p != null) {
 
-            String[] months = DateFormatSymbols.getInstance(Locale.ENGLISH).getMonths();
+            String[] months = DateFormatSymbols.getInstance(Locale.getDefault()).getMonths();
             ObservableList lists = FXCollections.observableArrayList(months);
             pxAxis.setCategories(lists);
 

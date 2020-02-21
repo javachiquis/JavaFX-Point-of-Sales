@@ -1,5 +1,8 @@
 package com.rafsan.inventory.controller.login;
 
+import com.rafsan.inventory.controller.admin.AdminController;
+import com.rafsan.inventory.controller.pos.PosController;
+import com.rafsan.inventory.entity.Employee;
 import com.rafsan.inventory.model.EmployeeModel;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -76,34 +79,53 @@ public class LoginController implements Initializable {
 
                     ((Node) (event.getSource())).getScene().getWindow().hide();
 
-                    String type = model.getEmployeeType(username);
+                    Employee employee = model.getEmployee(username);
 
-                    switch (type) {
+                    switch (employee.getType()) {
                         case "admin":
-                            windows("/fxml/Admin.fxml", "Admin Panel");
+                            //AdminController adminController = new AdminController(employee);
+                            windows("/fxml/Admin.fxml", "Admin Panel", null);
                             break;
 
                         case "employee":
-                            windows("/fxml/Pos.fxml", "Point of Sales");
+                            PosController posController = new PosController(employee);
+                            windows("/fxml/Pos.fxml", "Punto de ventas", posController);
                             break;
                     }
                 } else {
                     passwordField.setText("");
-                    errorLabel.setText("Wrong Password!");
+                    errorLabel.setText("Contraseña erronea!");
                 }
             } else {
                 resetFields();
-                errorLabel.setText("User doesn't exist!");
+                errorLabel.setText("Usuario no existente!");
             }
         }
     }
 
-    private void windows(String path, String title) throws Exception {
+    /*private void windows(String path, String title) throws Exception {
 
         Parent root = FXMLLoader.load(getClass().getResource(path));
         Stage stage = new Stage();
         Scene scene = new Scene(root);
-        stage.setTitle(title);
+        stage.setTitle(title + " - " + usernameField.getText().trim());
+        stage.getIcons().add(new Image("/images/logo.png"));
+        stage.setScene(scene);
+        stage.show();
+    }*/
+
+    private void windows(String path, String title, Initializable controller) throws Exception {
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+
+        if (controller != null) {
+            loader.setController(controller);
+        }
+
+        Parent root = loader.load();
+        Stage stage = new Stage();
+        Scene scene = new Scene(root);
+        stage.setTitle(title + " - " + usernameField.getText().trim());
         stage.getIcons().add(new Image("/images/logo.png"));
         stage.setScene(scene);
         stage.show();
@@ -135,7 +157,7 @@ public class LoginController implements Initializable {
         String errorMessage = "";
 
         if (usernameField.getText() == null || passwordField.getText().length() == 0) {
-            errorMessage += "Please enter credentials!\n";
+            errorMessage += "Por favor ingrese los datos!\n";
         }
 
         if (errorMessage.length() == 0) {

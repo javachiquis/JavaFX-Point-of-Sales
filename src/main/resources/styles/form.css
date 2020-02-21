@@ -1,6 +1,6 @@
 
 .top-bar, .header, .bottom-bar {
-    -fx-background-color: #16A086;
+    -fx-background-color: #143346;
 }
 
 .header-label{
@@ -21,5 +21,6 @@
 }
 
 .vbox-body {
-    -fx-background-color: #1BBC9B;
+    -fx-background-color:#E9F1F6;
+    -fx-background-color: linear-gradient(to right bottom, #E9F1F6 30%, #143346 60%);
 }

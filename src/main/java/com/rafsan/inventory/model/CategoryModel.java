@@ -68,6 +68,19 @@ public class CategoryModel implements CategoryDao {
         session.getTransaction().commit();
     }
 
+    /*@Override
+    public ObservableList<String> getTypes() {
+        
+        session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        Criteria criteria = session.createCriteria(Category.class);
+        criteria.setProjection(Projections.property("type"));
+        ObservableList<String> list = FXCollections.observableArrayList(criteria.list());
+        session.getTransaction().commit();
+        
+        return list;
+    }*/
+    
     @Override
     public ObservableList<String> getTypes() {
         
