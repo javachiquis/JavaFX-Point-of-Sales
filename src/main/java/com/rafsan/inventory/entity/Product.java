@@ -29,6 +29,8 @@ public class Product implements Serializable {
     private String description;
     @Column(name = "image_url")
     private String imageURL;
+    @Column(name = "datetime", insertable=false)
+    private String date;
 
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "categoryId")
@@ -131,5 +133,13 @@ public class Product implements Serializable {
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

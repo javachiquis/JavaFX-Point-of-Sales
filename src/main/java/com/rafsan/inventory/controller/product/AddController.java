@@ -49,8 +49,8 @@ public class AddController implements Initializable, ProductInterface {
         productModel = new ProductModel();
         categoryModel = new CategoryModel();
         supplierModel = new SupplierModel();
-        ObservableList<Category> categoryList = FXCollections.observableArrayList(categoryModel.getCategories());
-        ObservableList<Supplier> supplierList = FXCollections.observableArrayList(supplierModel.getSuppliers());
+        ObservableList<Category> categoryList = FXCollections.observableArrayList(categoryModel.findAll());
+        ObservableList<Supplier> supplierList = FXCollections.observableArrayList(supplierModel.findAll());
         categoryBox.setItems(categoryList);
         supplierBox.setItems(supplierList);
         loadImage.setImage(new Image("images/default_product_image.jpg"));
@@ -74,16 +74,16 @@ public class AddController implements Initializable, ProductInterface {
                         imageURL
                 );
 
-                productModel.saveProduct(product);
+                productModel.save(product);
                 PRODUCTLIST.clear();
-                PRODUCTLIST.addAll(productModel.getProducts());
+                PRODUCTLIST.addAll(productModel.findAllByDateDesc());
 
                 ((Stage) saveButton.getScene().getWindow()).close();
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Successful");
-                alert.setHeaderText("Product is added");
-                alert.setContentText("Product is added successfully");
+                alert.setTitle("Exitoso");
+                alert.setHeaderText("Producto agregado");
+                alert.setContentText("El producto se agrega exitosamente");
                 alert.showAndWait();
             }
         } catch(Exception ex) {
@@ -131,31 +131,31 @@ public class AddController implements Initializable, ProductInterface {
         String errorMessage = "";
 
         if (nameField.getText() == null || nameField.getText().length() == 0) {
-            errorMessage += "No valid name!\n";
+            errorMessage += "Sin nombre válido!\n";
         }
 
         if (priceField.getText() == null || priceField.getText().length() == 0) {
-            errorMessage += "No valid price!\n";
+            errorMessage += "Sin precio válido!\n";
         }
 
         if (quantityField.getText() == null || quantityField.getText().length() == 0) {
-            errorMessage += "No valid quantity!\n";
+            errorMessage += "Sin cantidad válida!\n";
         }
 
         if (descriptionArea.getText() == null || descriptionArea.getText().length() == 0) {
-            errorMessage += "No description!\n";
+            errorMessage += "Sin descripción!\n";
         }
 
         if (categoryBox.getSelectionModel().isEmpty()) {
-            errorMessage += "Please select the category!\n";
+            errorMessage += "Por favor seleccione una categoría!\n";
         }
 
         if (errorMessage.length() == 0) {
             return true;
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Invalid Fields");
-            alert.setHeaderText("Please correct invalid fields");
+            alert.setTitle("Campos Inválidos");
+            alert.setHeaderText("Por favor corrija los campos inválidos");
             alert.setContentText(errorMessage);
             alert.showAndWait();
 

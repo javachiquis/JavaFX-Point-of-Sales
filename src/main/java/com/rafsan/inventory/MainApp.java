@@ -1,5 +1,6 @@
 package com.rafsan.inventory;
 
+import com.rafsan.inventory.exceptions.DataAccessLayerException;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
@@ -38,20 +39,19 @@ public class MainApp extends Application {
 
     public static void main(String[] args) {
 
-        if (HibernateUtil.setSessionFactory()) {
+        try{
+            HibernateUtil.buildIfNeeded();
             launch(args);
-            HibernateUtil.getSessionFactory().close();
-        } else {
+        } catch (DataAccessLayerException ex){
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("A ocurrido un error!");
+                alert.setTitle("Ha ocurrido un error!");
                 alert.setHeaderText("Error conexion Base de Datos!");
                 alert.setContentText("Por favor contacte al Desarrollador");
                 alert.showAndWait();
                 Platform.exit();
             });
         }
-
     }
 
 }

@@ -1,14 +1,10 @@
 package com.rafsan.inventory.controller.admin;
 
-import com.rafsan.inventory.entity.Employee;
+import com.rafsan.inventory.constants.MonthEnum;
 import com.rafsan.inventory.entity.Invoice;
 import com.rafsan.inventory.entity.Product;
 import com.rafsan.inventory.model.InvoiceModel;
 import com.rafsan.inventory.model.ProductModel;
-import java.net.URL;
-import java.text.DateFormatSymbols;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,18 +15,20 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+
+import java.net.URL;
+import java.text.DateFormatSymbols;
+import java.time.YearMonth;
+import java.util.*;
 
 public class AdminController implements Initializable {
 
@@ -54,6 +52,12 @@ public class AdminController implements Initializable {
     @FXML
     private PieChart stockChart;
 
+    @FXML
+    private ComboBox<String> monthMenu;
+
+    @FXML
+    private ComboBox<Integer> yearMenu;
+
     private ProductModel productModel;
     private InvoiceModel invoiceModel;
 
@@ -64,6 +68,8 @@ public class AdminController implements Initializable {
         invoiceModel = new InvoiceModel();
 
         drawerAction();
+        loadMonthMenu();
+        loadYearMenu();
         loadInvoiceChart();
         loadProductsChart();
         loadStockChart();
@@ -88,34 +94,132 @@ public class AdminController implements Initializable {
         });
     }
 
+    private void loadMonthMenu() {
+        String[] months = DateFormatSymbols.getInstance(Locale.getDefault()).getMonths();
+        ObservableList<String> monthList = FXCollections.observableArrayList(months);
+        monthList.add(0, "Reporte General");
+        monthMenu.setItems(monthList);
+    }
+
+    private void loadYearMenu() {
+        String selectedMonth = monthMenu.getSelectionModel().getSelectedItem();
+        int monthIndex = MonthEnum.getIndexByName(selectedMonth);
+
+        ObservableList<Integer> years = invoiceModel.getInvoiceYearsByMonth(monthIndex);
+        yearMenu.setItems(years);
+
+        /*for (String year : years){
+            System.out.println(year);
+        }*/
+    }
+
+    private void loadMonthlyChart() {
+
+        try {
+            invoiceChart.getData().clear();
+
+            String monthName = monthMenu.getSelectionModel().getSelectedItem();
+            Integer month = MonthEnum.getIndexByName(monthName);
+            Integer year = yearMenu.getSelectionModel().getSelectedItem();
+            YearMonth yearMonth = YearMonth.of(year, month);
+            int daysInMonth = yearMonth.lengthOfMonth();
+
+            List<String> dayList = new ArrayList<>();
+            for (int i = 1; i <= daysInMonth; i++) {
+                dayList.add(String.valueOf(i));
+            }
+
+            ObservableList<String> days = FXCollections.observableArrayList(dayList);
+
+            XYChart.Series series = new XYChart.Series();
+
+            Map<Integer, Double> payableMap = createDaysMap(invoiceModel.findAllInvoicesByMonth(month));
+
+            for (Integer key : payableMap.keySet()) {
+                series.getData().add(new XYChart.Data(key.toString(), payableMap.get(key)));
+            }
+
+            /*for (Invoice i : invoiceModel.findAllInvoicesByMonth(month)) {
+                String dayOfMonth = convertDayOfMonth(i.getDate());
+                series.getData().add(new XYChart.Data(dayOfMonth, i.getPayable()));
+            }*/
+
+            series.setName("Ventas en " + monthName);
+            invoiceChart.setTitle("Reporte de Ventas " + monthName + " " + year);
+            invoiceChart.getData().add(series);
+            ixAxis.setCategories(days);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    private Map<Integer, Double> createDaysMap(ObservableList<Invoice> invoiceList) {
+        Map<Integer, Double> payableMap = new HashMap<>();
+        for (Invoice i : invoiceList) {
+            Integer dayOfMonth = convertDayOfMonth(i.getDate());
+            if (payableMap.containsKey(dayOfMonth)) {
+                double payableSum = payableMap.get(dayOfMonth) + i.getPayable();
+                payableMap.put(dayOfMonth, payableSum);
+            } else {
+                payableMap.put(dayOfMonth, i.getPayable());
+            }
+        }
+
+        return payableMap;
+    }
+
     private void loadInvoiceChart() {
 
-        try{
+        try {
+            invoiceChart.getData().clear();
             String[] months = DateFormatSymbols.getInstance(Locale.getDefault()).getMonths();
             ObservableList lists = FXCollections.observableArrayList(months);
             XYChart.Series series = new XYChart.Series();
 
-            for (Invoice i : invoiceModel.getInvoices()) {
-                String month = convertDate(i.getDate());
-                series.getData().add(new XYChart.Data(month, i.getPayable()));
+            Map<String, Double> payableMap = createMonthMap(invoiceModel.findAll());
+
+            for (String key : payableMap.keySet()) {
+                series.getData().add(new XYChart.Data(key, payableMap.get(key)));
             }
 
-            series.setName("Sales");
-            ixAxis.setCategories(lists);
+            /*for (Invoice i : invoiceModel.findAll()) {
+                String month = convertDate(i.getDate());
+                series.getData().add(new XYChart.Data(month, i.getPayable()));
+            }*/
+
+            series.setName("Ventas generales");
+            invoiceChart.setTitle("Reporte de Ventas");
             invoiceChart.getData().add(series);
-        } catch(Exception ex){
+            ixAxis.setCategories(lists);
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
+
+    }
+
+    private Map<String, Double> createMonthMap(List<Invoice> invoiceList) {
+        Map<String, Double> payableMap = new HashMap<>();
+        for (Invoice i : invoiceList) {
+            String dayOfMonth = convertDate(i.getDate());
+            if (payableMap.containsKey(dayOfMonth)) {
+                double payableSum = payableMap.get(dayOfMonth) + i.getPayable();
+                payableMap.put(dayOfMonth, payableSum);
+            } else {
+                payableMap.put(dayOfMonth, i.getPayable());
+            }
+        }
+
+        return payableMap;
     }
 
     private void loadProductsChart() {
 
-        try{
+        try {
             ObservableList lists = FXCollections.observableArrayList();
             XYChart.Series<String, Double> series = new XYChart.Series<>();
 
-            for (Product p : productModel.getProducts()) {
+            for (Product p : productModel.findAll()) {
                 series.getData().add(new XYChart.Data(p.getProductName(), p.getQuantity()));
                 lists.add(p.getProductName());
             }
@@ -126,7 +230,11 @@ public class AdminController implements Initializable {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-        
+
+    }
+
+    private Integer convertDayOfMonth(String date) {
+        return Integer.parseInt(date.substring(8, 10));
     }
 
     private String convertDate(String date) {
@@ -134,16 +242,16 @@ public class AdminController implements Initializable {
         int d = Integer.parseInt(date.substring(5, 7));
         return new DateFormatSymbols().getMonths()[d - 1];
     }
-    
-    private void loadStockChart(){
-    
+
+    private void loadStockChart() {
+
         ObservableList<PieChart.Data> lists = FXCollections.observableArrayList();
-        
-        for(Product p : productModel.getProducts()){
-        
+
+        for (Product p : productModel.findAll()) {
+
             lists.add(new PieChart.Data(p.getProductName(), p.getQuantity()));
         }
-        
+
         stockChart.getData().addAll(lists);
     }
 
@@ -219,5 +327,18 @@ public class AdminController implements Initializable {
         stage.getIcons().add(new Image("/images/logo.png"));
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void handleMonthChange(ActionEvent actionEvent) {
+        if ("Reporte general".equalsIgnoreCase(monthMenu.getSelectionModel().getSelectedItem())) {
+            loadInvoiceChart();
+        } else {
+            loadYearMenu();
+        }
+    }
+
+    @FXML
+    public void handleShowChart(ActionEvent actionEvent) {
+        loadMonthlyChart();
     }
 }

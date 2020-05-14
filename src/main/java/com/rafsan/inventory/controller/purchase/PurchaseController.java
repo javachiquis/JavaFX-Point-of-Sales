@@ -107,7 +107,7 @@ public class PurchaseController implements Initializable, PurchaseInterface, Tab
             PURCHASELIST.clear();
         }
         
-        PURCHASELIST.addAll(model.getPurchases());
+        PURCHASELIST.addAll(model.findAllByDateDesc());
     }
     
     private void drawerAction() {

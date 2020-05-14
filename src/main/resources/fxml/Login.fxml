@@ -11,7 +11,7 @@
             <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
          </padding>
          <children>
-            <Label alignment="TOP_LEFT" blendMode="COLOR_BURN" prefHeight="111.0" prefWidth="253.0" styleClass="tagline" text="INVENTARIO JASREN S.A.S" />
+            <Label alignment="TOP_LEFT" blendMode="COLOR_BURN" prefHeight="111.0" prefWidth="128.0" styleClass="tagline" text="SANDIA S.A.S" />
             <Separator maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="300.0" VBox.vgrow="NEVER">
                <VBox.margin>
                   <Insets bottom="20.0" />

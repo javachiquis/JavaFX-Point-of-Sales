@@ -3,8 +3,6 @@ package com.rafsan.inventory.controller.supplier;
 import com.rafsan.inventory.entity.Supplier;
 import com.rafsan.inventory.interfaces.SupplierInterface;
 import com.rafsan.inventory.model.SupplierModel;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,6 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class AddController implements Initializable, SupplierInterface {
 
@@ -49,16 +50,16 @@ public class AddController implements Initializable, SupplierInterface {
                     addressArea.getText()
             );
 
-            supplierModel.saveSuplier(supplier);
+            supplierModel.save(supplier);
             SUPPLIERLIST.clear();
-            SUPPLIERLIST.addAll(supplierModel.getSuppliers());
+            SUPPLIERLIST.addAll(supplierModel.findAll());
 
             ((Stage) saveButton.getScene().getWindow()).close();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Successful");
-            alert.setHeaderText("Employee Created!");
-            alert.setContentText("Employee is created successfully");
+            alert.setTitle("Exitosamente");
+            alert.setHeaderText("Proveedor Creado!");
+            alert.setContentText("Proveedor creado satisfactoriamente");
             alert.showAndWait();
         }
     }
@@ -68,23 +69,23 @@ public class AddController implements Initializable, SupplierInterface {
         String errorMessage = "";
 
         if (supplierField.getText() == null || supplierField.getText().length() == 0) {
-            errorMessage += "No valid first name!\n";
+            errorMessage += "Sin nombre válido!\n";
         }
 
         if (phoneField.getText() == null || phoneField.getText().length() == 0) {
-            errorMessage += "No valid phone number!\n";
+            errorMessage += "Sin número de teléfono válido!\n";
         }
 
         if (addressArea.getText() == null || addressArea.getText().length() == 0) {
-            errorMessage += "No email address!\n";
+            errorMessage += "Sin correo válido!\n";
         }
 
         if (errorMessage.length() == 0) {
             return true;
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Invalid Fields");
-            alert.setHeaderText("Please correct invalid fields");
+            alert.setTitle("Campos inválidos");
+            alert.setHeaderText("Por favor correjir los campos inválidos");
             alert.setContentText(errorMessage);
             alert.showAndWait();
 

@@ -1,11 +1,8 @@
 package com.rafsan.inventory.controller.supplier;
 
-import com.rafsan.inventory.interfaces.SupplierInterface;
 import com.rafsan.inventory.entity.Supplier;
+import com.rafsan.inventory.interfaces.SupplierInterface;
 import com.rafsan.inventory.model.SupplierModel;
-import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.collections.transformation.FilteredList;
@@ -17,12 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -31,6 +23,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+
+import java.net.URL;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class SupplierController implements Initializable, SupplierInterface {
 
@@ -110,7 +106,7 @@ public class SupplierController implements Initializable, SupplierInterface {
             SUPPLIERLIST.clear();
         }
         
-        SUPPLIERLIST.addAll(model.getSuppliers());
+        SUPPLIERLIST.addAll(model.findAll());
     }
     
     private void drawerAction() {
@@ -269,7 +265,7 @@ public class SupplierController implements Initializable, SupplierInterface {
         if (result.get() == ButtonType.OK) {
             Supplier selectedSupplier = supplierTable.getSelectionModel().getSelectedItem();
 
-            model.deleteSuplier(selectedSupplier);
+            model.delete(selectedSupplier);
             SUPPLIERLIST.remove(selectedSupplier);
         }
 

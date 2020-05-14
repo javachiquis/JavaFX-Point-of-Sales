@@ -1,11 +1,8 @@
 package com.rafsan.inventory.controller.category;
 
-import com.rafsan.inventory.interfaces.CategoryInterface;
 import com.rafsan.inventory.entity.Category;
+import com.rafsan.inventory.interfaces.CategoryInterface;
 import com.rafsan.inventory.model.CategoryModel;
-import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.collections.transformation.FilteredList;
@@ -17,12 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -31,6 +23,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+
+import java.net.URL;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class CategoryController implements Initializable, CategoryInterface {
 
@@ -106,7 +102,7 @@ public class CategoryController implements Initializable, CategoryInterface {
         if (!CATEGORYLIST.isEmpty()) {
             CATEGORYLIST.clear();
         }
-        CATEGORYLIST.addAll(model.getCategories());
+        CATEGORYLIST.addAll(model.findAll());
     }
 
     private void drawerAction() {
@@ -265,7 +261,7 @@ public class CategoryController implements Initializable, CategoryInterface {
         if (result.get() == ButtonType.OK) {
             Category selectedCategory = categoryTable.getSelectionModel().getSelectedItem();
 
-            model.deleteCategory(selectedCategory);
+            model.delete(selectedCategory);
             CATEGORYLIST.remove(selectedCategory);
         }
 

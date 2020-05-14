@@ -116,7 +116,7 @@ public class EmployeeController implements Initializable, EmployeeInterface {
         if (!EMPLOYEELIST.isEmpty()) {
             EMPLOYEELIST.clear();
         }
-        EMPLOYEELIST.addAll(model.getEmployees());
+        EMPLOYEELIST.addAll(model.findAll());
     }
 
     private void drawerAction() {
@@ -276,7 +276,7 @@ public class EmployeeController implements Initializable, EmployeeInterface {
         if (result.get() == ButtonType.OK) {
             Employee selectedEmployee = employeeTable.getSelectionModel().getSelectedItem();
 
-            model.deleteEmployee(selectedEmployee);
+            model.delete(selectedEmployee);
             EMPLOYEELIST.remove(selectedEmployee);
         }
 

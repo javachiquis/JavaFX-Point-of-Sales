@@ -1,119 +1,58 @@
 package com.rafsan.inventory.model;
 
 import com.rafsan.inventory.HibernateUtil;
+import com.rafsan.inventory.dao.AbstractGenericDao;
 import com.rafsan.inventory.dao.ProductDao;
 import com.rafsan.inventory.entity.Product;
-import com.rafsan.inventory.entity.Supplier;
-import java.util.List;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
+import org.hibernate.HibernateException;
+import org.hibernate.query.Query;
 
-public class ProductModel implements ProductDao {
+public class ProductModel extends AbstractGenericDao<Product> implements ProductDao {
 
-    private static Session session;
-
-    @Override
-    public ObservableList<Product> getProducts() {
-
-        ObservableList<Product> list = FXCollections.observableArrayList();
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        List<Product> products = session.createQuery("from Product").list();
-        session.beginTransaction().commit();
-        products.stream().forEach(list::add);
-
-        return list;
-    }
-
-    @Override
-    public Product getProduct(long id) {
-
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Product product = session.get(Product.class, id);
-        session.getTransaction().commit();
-
-        return product;
+    public ProductModel() {
+        super(Product.class);
     }
 
     @Override
     public Product getProductByName(String productName) {
+        try {
+            startOperation();
+            Query query = getSession().createQuery("from Product where productName=:name");
+            query.setParameter("name", productName);
+            commit();
+            Product product = (Product) query.uniqueResult();
+            return product;
+        } catch (HibernateException ex) {
+            handleException(ex);
+        } finally {
+            HibernateUtil.close(getSession());
+        }
 
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Query query = session.createQuery("from Product where productName=:name");
-        query.setParameter("name", productName);
-        Product product = (Product) query.uniqueResult();
-        
-        return product;
-    }
-
-    @Override
-    public void saveProduct(Product product) {
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        session.save(product);
-        session.getTransaction().commit();
+        return null;
     }
 
     @Override
-    public void updateProduct(Product product) {
-
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Product p = session.get(Product.class, product.getId());
-        p.setProductName(product.getProductName());
-        p.setCategory(product.getCategory());
-        p.setQuantity(product.getQuantity());
-        p.setPrice(product.getPrice());
-        p.setDescription(product.getDescription());
-        p.setImageURL(product.getImageURL());
-        session.getTransaction().commit();
-    }
-    
-    @Override
-    public void increaseProduct(Product product){
-    
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Product p = session.get(Product.class, product.getId());
-        p.setQuantity(product.getQuantity());
-        session.getTransaction().commit();
-    }
-    
-    @Override
-    public void decreaseProduct(Product product){
-    
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Product p = session.get(Product.class, product.getId());
-        p.setQuantity(product.getQuantity());
-        session.getTransaction().commit();
+    public void increaseProduct(Product product) {
+        saveOrUpdate(product);
     }
 
     @Override
-    public void deleteProduct(Product product) {
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Product p = session.get(Product.class, product.getId());
-        session.delete(p);
-        session.getTransaction().commit();
+    public void decreaseProduct(Product product) {
+        saveOrUpdate(product);
     }
-    
+
     @Override
-    public ObservableList<String> getProductNames(){
+    public ObservableList<String> getProductNames() {
     
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
+        /*session.beginTransaction();
         Criteria criteria = session.createCriteria(Product.class);
         criteria.setProjection(Projections.property("productName"));
         ObservableList<String> list = FXCollections.observableArrayList(criteria.list());
         session.getTransaction().commit();
+        closeSession();
         
-        return list;
+        return list;*/
+        return null;
     }
 }

@@ -13,18 +13,7 @@
   <children>
       <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" prefWidth="760.0" styleClass="header" VBox.vgrow="NEVER">
          <children>
-            <HBox alignment="CENTER" blendMode="SRC_ATOP" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" prefWidth="200.0" HBox.hgrow="NEVER">
-               <children>
-                  <ImageView blendMode="EXCLUSION" fitHeight="60.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
-                     <image>
-                        <Image url="@../images/logo.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </HBox>
+            <HBox alignment="CENTER" blendMode="SRC_ATOP" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" prefWidth="200.0" HBox.hgrow="NEVER" />
             <HBox alignment="CENTER_LEFT" prefHeight="65.0" prefWidth="560.0">
                <children>
                   <Button layoutX="90.0" layoutY="18.0" mnemonicParsing="false" onAction="#logoutAction" prefHeight="30.0" prefWidth="30.0" styleClass="logout-button">

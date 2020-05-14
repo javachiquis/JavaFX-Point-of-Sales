@@ -18,8 +18,7 @@
                         <Image url="@../images/logo.png" />
                      </image>
                   </ImageView>
-               </children>
-            </HBox>
+               </children></HBox>
             <HBox alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" prefWidth="560.0" spacing="5.0" styleClass="control-background" HBox.hgrow="ALWAYS">
                <children>
                   <Pane maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0" prefWidth="560.0" style="-fx-background-color: #143346;" HBox.hgrow="ALWAYS">
@@ -49,6 +48,12 @@
                                  </HBox.margin>
                                  <children>
                                     <Label layoutX="14.0" layoutY="12.0" styleClass="hbox-title" text="Administrador" />
+                                    <ComboBox fx:id="yearMenu" layoutX="1172.0" layoutY="7.0" prefHeight="25.0" prefWidth="141.0" promptText="Año">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets></ComboBox>
+                                    <ComboBox fx:id="monthMenu" layoutX="1001.0" layoutY="7.0" onAction="#handleMonthChange" prefHeight="25.0" prefWidth="165.0" promptText="Mes" />
+                                    <Button layoutX="1320.0" layoutY="7.0" mnemonicParsing="false" onAction="#handleShowChart" prefHeight="25.0" prefWidth="39.0" text="Ir" />
                                  </children>
                               </Pane>
                            </children>

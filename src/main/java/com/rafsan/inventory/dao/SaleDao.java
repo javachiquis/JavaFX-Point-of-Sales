@@ -1,14 +1,14 @@
 package com.rafsan.inventory.dao;
 
+import com.rafsan.inventory.entity.Invoice;
 import com.rafsan.inventory.entity.Sale;
 import javafx.collections.ObservableList;
 
-public interface SaleDao {
+public interface SaleDao extends GenericDao<Sale> {
 
-    public ObservableList<Sale> getSales();
-    public Sale getSale(long id);
-    public ObservableList<Sale> getSaleByProductId(long id);
-    public void saveSale(Sale sale);
-    public void updateSale(Sale sale);
-    public void deleteSale(Sale sale);
+    ObservableList<Sale> getSaleByProductId(long id);
+
+    ObservableList<Integer> getSalesYearsByMonth(int monthIndex);
+
+    ObservableList<Sale> findProductSalesByMonth(Integer monthIndex, Number productId);
 }

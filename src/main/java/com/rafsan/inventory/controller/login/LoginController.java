@@ -79,7 +79,7 @@ public class LoginController implements Initializable {
 
                     ((Node) (event.getSource())).getScene().getWindow().hide();
 
-                    Employee employee = model.getEmployee(username);
+                    Employee employee = model.getEmployeeByName(username);
 
                     switch (employee.getType()) {
                         case "admin":

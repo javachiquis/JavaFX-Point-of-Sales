@@ -2,10 +2,7 @@ package com.rafsan.inventory.controller.category;
 
 import com.rafsan.inventory.entity.Category;
 import com.rafsan.inventory.interfaces.CategoryInterface;
-import static com.rafsan.inventory.interfaces.CategoryInterface.CATEGORYLIST;
 import com.rafsan.inventory.model.CategoryModel;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,6 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class AddController implements Initializable, CategoryInterface {
     
@@ -48,9 +48,9 @@ public class AddController implements Initializable, CategoryInterface {
                     descriptionArea.getText()
             );
 
-            categoryModel.saveCategory(category);
+            categoryModel.save(category);
             CATEGORYLIST.clear();
-            CATEGORYLIST.addAll(categoryModel.getCategories());
+            CATEGORYLIST.addAll(categoryModel.findAll());
 
             ((Stage) saveButton.getScene().getWindow()).close();
 

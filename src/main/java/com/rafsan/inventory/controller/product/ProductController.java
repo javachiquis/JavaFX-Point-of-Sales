@@ -1,11 +1,15 @@
 package com.rafsan.inventory.controller.product;
 
+import com.rafsan.inventory.constants.MonthEnum;
+import com.rafsan.inventory.entity.Invoice;
 import com.rafsan.inventory.entity.Product;
 import com.rafsan.inventory.entity.Sale;
 import com.rafsan.inventory.interfaces.TableColumnInterface;
 import com.rafsan.inventory.model.ProductModel;
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.time.YearMonth;
+import java.util.*;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -16,9 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
@@ -27,9 +29,7 @@ import com.rafsan.inventory.interfaces.ProductInterface;
 import static com.rafsan.inventory.interfaces.ProductInterface.PRODUCTLIST;
 import com.rafsan.inventory.model.SalesModel;
 import java.text.DateFormatSymbols;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -37,9 +37,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.StageStyle;
@@ -50,9 +47,7 @@ public class ProductController implements Initializable, ProductInterface, Table
     @FXML
     private TableView<Product> productTable;
     @FXML
-    private TableColumn<Product, Long> idColumn;
-    @FXML
-    private TableColumn<Product, String> categoryColumn,nameColumn, supplierColumn, descriptionColumn;
+    private TableColumn<Product, String> categoryColumn,nameColumn, supplierColumn, descriptionColumn, dateColumn;
     @FXML
     private TableColumn<Product, Double> priceColumn, quantityColumn;
     @FXML
@@ -74,6 +69,12 @@ public class ProductController implements Initializable, ProductInterface, Table
     @FXML
     private VBox drawer;
 
+    @FXML
+    private ComboBox<String> monthMenu;
+
+    @FXML
+    private ComboBox<Integer> yearMenu;
+
     private SalesModel salesModel;
 
     @Override
@@ -83,7 +84,6 @@ public class ProductController implements Initializable, ProductInterface, Table
         drawerAction();
         loadData();
 
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         categoryColumn.setCellValueFactory((TableColumn.CellDataFeatures<Product, String> p)
                 -> new SimpleStringProperty(p.getValue().getCategory().getType()));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
@@ -94,12 +94,17 @@ public class ProductController implements Initializable, ProductInterface, Table
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         quantityColumn.setCellFactory(getFormattedValue());
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         productTable.setItems(PRODUCTLIST);
 
         filterData();
 
         productTable.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> loadProductSalesChart(newValue));
+                (observable, oldValue, newValue) -> {
+                    loadProductSalesChart(newValue);
+                    loadMonthMenu();
+                    loadYearMenu();
+                });
 
         editButton
                 .disableProperty()
@@ -158,7 +163,63 @@ public class ProductController implements Initializable, ProductInterface, Table
         if (!PRODUCTLIST.isEmpty()) {
             PRODUCTLIST.clear();
         }
-        PRODUCTLIST.addAll(model.getProducts());
+        PRODUCTLIST.addAll(model.findAllByDateDesc());
+    }
+
+    private void loadMonthlyChart(Product p) {
+
+        if(p != null){
+            try {
+                productChart.getData().clear();
+
+                String monthName = monthMenu.getSelectionModel().getSelectedItem();
+                Integer month = MonthEnum.getIndexByName(monthName);
+                Integer year = yearMenu.getSelectionModel().getSelectedItem();
+                YearMonth yearMonth = YearMonth.of(year, month);
+                int daysInMonth = yearMonth.lengthOfMonth();
+
+                List<String> dayList = new ArrayList<>();
+                for (int i = 1; i <= daysInMonth; i++) {
+                    dayList.add(String.valueOf(i));
+                }
+
+                ObservableList<String> days = FXCollections.observableArrayList(dayList);
+
+                XYChart.Series series = new XYChart.Series();
+
+                Map<Integer, Double> payableMap = createDaysMap(salesModel.findProductSalesByMonth(month, p.getId()));
+
+                for (Integer key : payableMap.keySet()) {
+                    series.getData().add(new XYChart.Data(key.toString(), payableMap.get(key)));
+                }
+
+                series.setName("Ventas " + p.getProductName() + " en " + monthName);
+                productChart.setTitle("Ventas de " + p.getProductName() + " " + monthName + " " + year);
+                productChart.getData().add(series);
+                pxAxis.setCategories(days);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private Map<Integer, Double> createDaysMap(ObservableList<Sale> saleList) {
+        Map<Integer, Double> payableMap = new HashMap<>();
+        for (Sale i : saleList) {
+            Integer dayOfMonth = convertDayOfMonth(i.getDate());
+            if (payableMap.containsKey(dayOfMonth)) {
+                double payableSum = payableMap.get(dayOfMonth) + i.getTotal();
+                payableMap.put(dayOfMonth, payableSum);
+            } else {
+                payableMap.put(dayOfMonth, i.getTotal());
+            }
+        }
+
+        return payableMap;
+    }
+
+    private Integer convertDayOfMonth(String date) {
+        return Integer.parseInt(date.substring(8, 10));
     }
 
     private void loadProductSalesChart(Product p) {
@@ -176,10 +237,10 @@ public class ProductController implements Initializable, ProductInterface, Table
             XYChart.Series series = new XYChart.Series();
             series.setName(p.getProductName());
 
-            for (Sale s : sales) {
+            Map<String, Double> payableMap = createMonthMap(sales);
 
-                String month = convertDate(s.getDate());
-                series.getData().add(new XYChart.Data(month, s.getTotal()));
+            for (String key : payableMap.keySet()) {
+                series.getData().add(new XYChart.Data(key, payableMap.get(key)));
             }
 
             productChart.getData().addAll(series);
@@ -187,11 +248,58 @@ public class ProductController implements Initializable, ProductInterface, Table
 
     }
 
+    private Map<String, Double> createMonthMap(List<Sale> invoiceList) {
+        Map<String, Double> payableMap = new HashMap<>();
+        for (Sale i : invoiceList) {
+            String dayOfMonth = convertDate(i.getDate());
+            if (payableMap.containsKey(dayOfMonth)) {
+                double payableSum = payableMap.get(dayOfMonth) + i.getTotal();
+                payableMap.put(dayOfMonth, payableSum);
+            } else {
+                payableMap.put(dayOfMonth, i.getTotal());
+            }
+        }
+
+        return payableMap;
+    }
+
     private String convertDate(String date) {
 
         int d = Integer.parseInt(date.substring(5, 7));
 
         return new DateFormatSymbols().getMonths()[d - 1];
+    }
+
+    private void loadMonthMenu() {
+        String[] months = DateFormatSymbols.getInstance(Locale.getDefault()).getMonths();
+        ObservableList<String> monthList = FXCollections.observableArrayList(months);
+        monthList.add(0, "Reporte General");
+        monthMenu.setItems(monthList);
+    }
+
+    private void loadYearMenu() {
+        String selectedMonth = monthMenu.getSelectionModel().getSelectedItem();
+        int monthIndex = MonthEnum.getIndexByName(selectedMonth);
+
+        ObservableList<Integer> years = salesModel.getSalesYearsByMonth(monthIndex);
+        yearMenu.setItems(years);
+
+        /*for (String year : years){
+            System.out.println(year);
+        }*/
+    }
+
+    public void handleMonthChange(ActionEvent actionEvent) {
+        if ("Reporte general".equalsIgnoreCase(monthMenu.getSelectionModel().getSelectedItem())) {
+            loadProductSalesChart(productTable.getSelectionModel().getSelectedItem());
+        } else {
+            loadYearMenu();
+        }
+    }
+
+    @FXML
+    public void handleShowChart(ActionEvent actionEvent) {
+        loadMonthlyChart(productTable.getSelectionModel().getSelectedItem());
     }
 
     @FXML
@@ -321,7 +429,7 @@ public class ProductController implements Initializable, ProductInterface, Table
         if (result.get() == ButtonType.OK) {
             Product selectedProduct = productTable.getSelectionModel().getSelectedItem();
 
-            model.deleteProduct(selectedProduct);
+            model.delete(selectedProduct);
             PRODUCTLIST.remove(selectedProduct);
         }
 

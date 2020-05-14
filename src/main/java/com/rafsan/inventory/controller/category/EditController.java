@@ -51,7 +51,7 @@ public class EditController implements Initializable, CategoryInterface {
                     descriptionArea.getText()
             );
 
-            categoryModel.updateCategory(editedCategory);
+            categoryModel.saveOrUpdate(editedCategory);
             CATEGORYLIST.set((int) selectedCategoryId, editedCategory);
 
             ((Stage) saveButton.getScene().getWindow()).close();

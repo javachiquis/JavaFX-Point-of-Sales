@@ -1,16 +1,15 @@
 package com.rafsan.inventory.entity;
 
 import java.io.Serializable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "invoices")
+@NamedNativeQuery(
+        name="invoiceMonthlyQuery",
+        query="SELECT * FROM invoices WHERE MONTH(datetime) = :monthIndex",
+        resultClass=Invoice.class
+)
 public class Invoice implements Serializable {
     
     @Id

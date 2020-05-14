@@ -7,8 +7,6 @@ import com.rafsan.inventory.interfaces.PurchaseInterface;
 import com.rafsan.inventory.model.ProductModel;
 import com.rafsan.inventory.model.PurchaseModel;
 import com.rafsan.inventory.model.SupplierModel;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,6 +18,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class AddController implements Initializable, PurchaseInterface {
 
@@ -38,8 +39,8 @@ public class AddController implements Initializable, PurchaseInterface {
         productModel = new ProductModel();
         supplierModel = new SupplierModel();
         purchaseModel = new PurchaseModel();
-        ObservableList<Product> productList = FXCollections.observableArrayList(productModel.getProducts());
-        ObservableList<Supplier> supplierList = FXCollections.observableArrayList(supplierModel.getSuppliers());
+        ObservableList<Product> productList = FXCollections.observableArrayList(productModel.findAll());
+        ObservableList<Supplier> supplierList = FXCollections.observableArrayList(supplierModel.findAll());
         productBox.setItems(productList);
         supplierBox.setItems(supplierList);
     }
@@ -51,7 +52,7 @@ public class AddController implements Initializable, PurchaseInterface {
 
             Product product = (Product) productBox.getSelectionModel().getSelectedItem();
             Supplier supplier = (Supplier) supplierBox.getSelectionModel().getSelectedItem();
-            Integer quantity = Integer.parseInt(quantityField.getText());
+            double quantity = Integer.parseInt(quantityField.getText());
             double price = Double.parseDouble(priceField.getText());
             double total = quantity * price;
             Purchase purchase = new Purchase(
@@ -62,13 +63,14 @@ public class AddController implements Initializable, PurchaseInterface {
                     total
             );
 
-            Product updatingProduct = productModel.getProduct(product.getId());
-            updatingProduct.setQuantity(updatingProduct.getQuantity() + quantity);
+            Product updatingProduct = productModel.findById(product.getId());
+            double newQuantity = updatingProduct.getQuantity() + quantity;
+            updatingProduct.setQuantity(newQuantity);
             productModel.increaseProduct(updatingProduct);
 
-            purchaseModel.savePurchase(purchase);
+            purchaseModel.save(purchase);
             PURCHASELIST.clear();
-            PURCHASELIST.addAll(purchaseModel.getPurchases());
+            PURCHASELIST.addAll(purchaseModel.findAllByDateDesc());
 
             ((Stage) saveButton.getScene().getWindow()).close();
 

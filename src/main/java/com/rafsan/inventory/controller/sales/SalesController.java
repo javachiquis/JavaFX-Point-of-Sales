@@ -4,10 +4,6 @@ import com.rafsan.inventory.entity.Sale;
 import com.rafsan.inventory.interfaces.SaleInterface;
 import com.rafsan.inventory.interfaces.TableColumnInterface;
 import com.rafsan.inventory.model.SalesModel;
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import com.rafsan.inventory.utils.DisplayUtils;
 import javafx.animation.TranslateTransition;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,6 +27,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class SalesController implements Initializable, SaleInterface, TableColumnInterface<Sale> {
 
@@ -114,7 +113,7 @@ public class SalesController implements Initializable, SaleInterface, TableColum
         if (!SALELIST.isEmpty()) {
             SALELIST.clear();
         }
-        SALELIST.addAll(model.getSales());
+        SALELIST.addAll(model.findAllByDateDesc());
     }
     
     private void drawerAction() {

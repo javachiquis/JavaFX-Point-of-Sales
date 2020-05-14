@@ -134,7 +134,7 @@
       <HBox alignment="CENTER_RIGHT" prefHeight="30.0" spacing="5.0" styleClass="bottom-bar" VBox.vgrow="NEVER">
          <children>
             <Button mnemonicParsing="false" onAction="#handleImage" text="Cambiar Imagen" />
-            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSave" prefHeight="54.0" prefWidth="120.0" text="Guadar" />
+            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSave" prefHeight="54.0" prefWidth="120.0" text="Guardar" />
             <Button mnemonicParsing="false" onAction="#handleCancel" prefHeight="54.0" prefWidth="120.0" text="Cancelar">
                <HBox.margin>
                   <Insets right="15.0" />

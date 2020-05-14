@@ -115,7 +115,7 @@ public class ReportController implements Initializable, ReportInterface, TableCo
         if (!REPORTLIST.isEmpty()) {
             REPORTLIST.clear();
         }
-        REPORTLIST.addAll(model.getInvoices());
+        REPORTLIST.addAll(model.findAllByDateDesc());
     }
     
     private void drawerAction() {

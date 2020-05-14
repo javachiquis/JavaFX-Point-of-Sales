@@ -1,88 +1,80 @@
 package com.rafsan.inventory.model;
 
 import com.rafsan.inventory.HibernateUtil;
+import com.rafsan.inventory.dao.AbstractGenericDao;
 import com.rafsan.inventory.dao.SaleDao;
+import com.rafsan.inventory.entity.Invoice;
 import com.rafsan.inventory.entity.Sale;
-import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.HibernateException;
+import org.hibernate.query.Query;
 
-public class SalesModel implements SaleDao {
+import java.util.List;
 
-    private static Session session;
+public class SalesModel extends AbstractGenericDao<Sale> implements SaleDao {
 
-    @Override
-    public ObservableList<Sale> getSales() {
-
-        ObservableList<Sale> list = FXCollections.observableArrayList();
-
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        List<Sale> products = session.createQuery("from Sale").list();
-        session.beginTransaction().commit();
-        products.stream().forEach(list::add);
-
-        return list;
+    public SalesModel() {
+        super(Sale.class);
     }
 
     @Override
     public ObservableList<Sale> getSaleByProductId(long id) {
-
         ObservableList<Sale> list = FXCollections.observableArrayList();
-
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-
-        List<Sale> products = (List<Sale>) session.createCriteria(Sale.class)
-                .add(Restrictions.eq("product.id", id)).list();
-
-        session.beginTransaction().commit();
-        products.stream().forEach(list::add);
-
+        try {
+            startOperation();
+            Query query = getSession().createQuery("from Sale where productId = :productId");
+            query.setParameter("productId", id);
+            commit();
+            List<Sale> sales = query.list();
+            sales.stream().forEach(list::add);
+        } catch (HibernateException ex) {
+            handleException(ex);
+        } finally {
+            HibernateUtil.close(getSession());
+        }
         return list;
     }
 
     @Override
-    public Sale getSale(long id) {
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Sale sale = session.get(Sale.class, id);
-        session.getTransaction().commit();
+    public ObservableList<Integer> getSalesYearsByMonth(int monthIndex){
+        try {
+            startOperation();
+            Query query = getSession().createNativeQuery("SELECT DISTINCT(YEAR(datetime)) FROM sales WHERE MONTH(datetime) = :monthIndex");
+            query.setParameter("monthIndex", monthIndex);
+            commit();
+            return FXCollections.observableArrayList(query.getResultList());
+        } catch (HibernateException ex) {
+            handleException(ex);
+        } finally {
+            HibernateUtil.close(getSession());
+        }
 
-        return sale;
+        return null;
     }
 
     @Override
-    public void saveSale(Sale sale) {
+    public ObservableList<Sale> findProductSalesByMonth(Integer monthIndex, Number productId) {
+        try {
+            ObservableList<Sale> sales = FXCollections.observableArrayList();
+            List<Sale> queryList = null;
+            startOperation();
+            Query query = getSession().createNamedQuery("salesMonthlyQuery", Sale.class);
+            query.setParameter("monthIndex", monthIndex);
+            query.setParameter("productId", productId);
+            commit();
 
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        session.save(sale);
-        session.getTransaction().commit();
-    }
+            queryList = query.list();
+            sales.addAll(queryList);
 
-    @Override
-    public void updateSale(Sale sale) {
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Sale s = session.get(Sale.class, sale.getId());
-        s.setProduct(sale.getProduct());
-        s.setQuantity(sale.getQuantity());
-        s.setPrice(sale.getPrice());
-        s.setTotal(sale.getTotal());
-        s.setDate(sale.getDate());
-        session.getTransaction().commit();
-    }
+            return sales;
+        } catch (HibernateException ex) {
+            handleException(ex);
+        } finally {
+            HibernateUtil.close(getSession());
+        }
 
-    @Override
-    public void deleteSale(Sale sale) {
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Sale s = session.get(Sale.class, sale.getId());
-        session.delete(s);
-        session.getTransaction().commit();
+        return null;
     }
 
 }

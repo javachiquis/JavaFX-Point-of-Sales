@@ -5,10 +5,6 @@ import com.rafsan.inventory.model.EmployeeModel;
 import com.rafsan.inventory.model.InvoiceModel;
 import com.rafsan.inventory.model.ProductModel;
 import com.rafsan.inventory.model.SalesModel;
-import java.net.URL;
-import java.sql.Timestamp;
-import java.util.ResourceBundle;
-
 import com.rafsan.inventory.utils.DisplayUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,6 +20,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+
+import java.net.URL;
+import java.sql.Timestamp;
+import java.util.ResourceBundle;
 
 public class InvoiceController implements Initializable {
 
@@ -72,7 +72,7 @@ public class InvoiceController implements Initializable {
 
             Invoice invoice = new Invoice(
                     invoiceId,
-                    employeeModel.getEmployee(employee.getUserName()),
+                    employeeModel.getEmployeeByName(employee.getUserName()),
                     payment.getSubTotal(),
                     payment.getVat(),
                     payment.getDiscount(),
@@ -81,7 +81,7 @@ public class InvoiceController implements Initializable {
                     retail
             );
 
-            invoiceModel.saveInvoice(invoice);
+            invoiceModel.save(invoice);
 
             for (Item i : items) {
 
@@ -91,14 +91,14 @@ public class InvoiceController implements Initializable {
                 productModel.decreaseProduct(p);
 
                 Sale sale = new Sale(
-                        invoiceModel.getInvoice(invoiceId),
+                        invoiceModel.findById(invoiceId),
                         productModel.getProductByName(i.getItemName()),
                         i.getQuantity(),
                         i.getUnitPrice(),
                         i.getTotal()
                 );
 
-                salesModel.saveSale(sale);
+                salesModel.save(sale);
             }
 
             FXMLLoader loader = new FXMLLoader((getClass().getResource("/fxml/Confirm.fxml")));

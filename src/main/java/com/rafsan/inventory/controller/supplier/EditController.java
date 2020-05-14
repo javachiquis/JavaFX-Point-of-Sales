@@ -3,8 +3,6 @@ package com.rafsan.inventory.controller.supplier;
 import com.rafsan.inventory.entity.Supplier;
 import com.rafsan.inventory.interfaces.SupplierInterface;
 import com.rafsan.inventory.model.SupplierModel;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,6 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class EditController implements Initializable, SupplierInterface {
 
@@ -70,7 +71,7 @@ public class EditController implements Initializable, SupplierInterface {
                     addressArea.getText()
             );
 
-            supplierModel.updateSuplier(editedSupplier);
+            supplierModel.saveOrUpdate(editedSupplier);
             SUPPLIERLIST.set((int) selectedSupplierId, editedSupplier);
 
             ((Stage) saveButton.getScene().getWindow()).close();

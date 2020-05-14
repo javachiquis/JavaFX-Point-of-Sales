@@ -3,19 +3,16 @@ package com.rafsan.inventory.controller.employee;
 import com.rafsan.inventory.entity.Employee;
 import com.rafsan.inventory.interfaces.EmployeeInterface;
 import com.rafsan.inventory.model.EmployeeModel;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.apache.commons.codec.digest.DigestUtils;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class EditController implements Initializable, EmployeeInterface {
 
@@ -58,7 +55,7 @@ public class EditController implements Initializable, EmployeeInterface {
                     addressArea.getText()
             );
 
-            employeeModel.updateEmployee(editedEmployee);
+            employeeModel.saveOrUpdate(editedEmployee);
             EMPLOYEELIST.set((int) selectedEmployeeId, editedEmployee);
 
             ((Stage) saveButton.getScene().getWindow()).close();

@@ -1,17 +1,12 @@
 package com.rafsan.inventory.controller.product;
 
-import com.rafsan.inventory.interfaces.ProductInterface;
 import com.rafsan.inventory.entity.Category;
 import com.rafsan.inventory.entity.Product;
 import com.rafsan.inventory.entity.Supplier;
+import com.rafsan.inventory.interfaces.ProductInterface;
 import com.rafsan.inventory.model.CategoryModel;
 import com.rafsan.inventory.model.ProductModel;
 import com.rafsan.inventory.model.SupplierModel;
-
-import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import com.rafsan.inventory.utils.DisplayUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,15 +14,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class EditController implements Initializable, ProductInterface {
 
@@ -53,8 +48,8 @@ public class EditController implements Initializable, ProductInterface {
         productModel = new ProductModel();
         categoryModel = new CategoryModel();
         supplierModel = new SupplierModel();
-        ObservableList<Category> categoryList = FXCollections.observableArrayList(categoryModel.getCategories());
-        ObservableList<Supplier> supplierList = FXCollections.observableArrayList(supplierModel.getSuppliers());
+        ObservableList<Category> categoryList = FXCollections.observableArrayList(categoryModel.findAll());
+        ObservableList<Supplier> supplierList = FXCollections.observableArrayList(supplierModel.findAll());
         categoryBox.setItems(categoryList);
         supplierBox.setItems(supplierList);
         resetValues();
@@ -93,7 +88,9 @@ public class EditController implements Initializable, ProductInterface {
                     imageURL
             );
 
-            productModel.updateProduct(editedProduct);
+            editedProduct.setDate(product.getDate());
+
+            productModel.saveOrUpdate(editedProduct);
             PRODUCTLIST.set((int) selectedProductId, editedProduct);
 
             ((Stage) saveButton.getScene().getWindow()).close();

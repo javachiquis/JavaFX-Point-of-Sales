@@ -1,59 +1,62 @@
 package com.rafsan.inventory.model;
 
 import com.rafsan.inventory.HibernateUtil;
+import com.rafsan.inventory.dao.AbstractGenericDao;
 import com.rafsan.inventory.dao.InvoiceDao;
+import com.rafsan.inventory.entity.Employee;
 import com.rafsan.inventory.entity.Invoice;
-import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.hibernate.Session;
+import org.hibernate.HibernateException;
+import org.hibernate.query.Query;
 
-public class InvoiceModel implements InvoiceDao {
+import java.util.List;
 
-    private static Session session;
+public class InvoiceModel extends AbstractGenericDao<Invoice> implements InvoiceDao {
 
-    @Override
-    public ObservableList<Invoice> getInvoices() {
-
-        ObservableList<Invoice> list = FXCollections.observableArrayList();
-
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        List<Invoice> products = session.createQuery("from Invoice").list();
-        session.beginTransaction().commit();
-        products.stream().forEach(list::add);
-
-        return list;
+    public InvoiceModel() {
+        super(Invoice.class);
     }
 
     @Override
-    public Invoice getInvoice(String id) {
+    public ObservableList<Integer> getInvoiceYearsByMonth(int monthIndex) {
+        try {
+            startOperation();
+            Query query = getSession().createNativeQuery("SELECT DISTINCT(YEAR(datetime)) FROM invoices WHERE MONTH(datetime) = :monthIndex");
+            query.setParameter("monthIndex", monthIndex);
+            commit();
+            return FXCollections.observableArrayList(query.getResultList());
+        } catch (HibernateException ex) {
+            handleException(ex);
+        } finally {
+            HibernateUtil.close(getSession());
+        }
 
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Invoice invoice = session.get(Invoice.class, id);
-        session.getTransaction().commit();
-
-        return invoice;
+        return null;
     }
 
     @Override
-    public void saveInvoice(Invoice invoice) {
+    public ObservableList<Invoice> findAllInvoicesByMonth(Integer monthIndex) {
+        try {
+            ObservableList<Invoice> invoices = FXCollections.observableArrayList();
+            List<Invoice> queryList = null;
+            startOperation();
+            //Query<Invoice> query = getSession().createNativeQuery("SELECT * FROM invoices WHERE MONTH(datetime) = :monthIndex");
+            Query query = getSession().createNamedQuery("invoiceMonthlyQuery", Invoice.class);
+            query.setParameter("monthIndex", monthIndex);
+            commit();
 
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        session.save(invoice);
-        session.getTransaction().commit();
-    }
+            queryList = query.list();
+            invoices.addAll(queryList);
 
-    @Override
-    public void deleteCategory(Invoice invoice) {
+            return invoices;
+        } catch (HibernateException ex) {
+            handleException(ex);
+        } finally {
+            HibernateUtil.close(getSession());
+        }
 
-        session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
-        Invoice i = session.get(Invoice.class, invoice.getId());
-        session.delete(i);
-        session.getTransaction().commit();
+        return null;
     }
 
 }
